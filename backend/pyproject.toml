@@ -1,0 +1,46 @@
+[project]
+name = "walk-with-god-backend"
+version = "0.1.0"
+description = "Backend API for Walk with God"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "fastapi>=0.115,<1.0",
+    "pydantic-settings>=2.6,<3.0",
+    "uvicorn[standard]>=0.32,<1.0",
+]
+
+[dependency-groups]
+dev = [
+    "anyio>=4.6,<5.0",
+    "httpx>=0.28,<1.0",
+    "pytest>=8.3,<9.0",
+    "ruff>=0.8,<1.0",
+]
+
+# This is an application, not an installable library, so uv should not
+# try to build/install the project itself.
+[tool.uv]
+package = false
+
+[tool.pytest.ini_options]
+minversion = "8.0"
+testpaths = ["tests"]
+pythonpath = ["."]
+addopts = "-q"
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+src = ["app", "tests"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM"]
+# FastAPI's dependency injection uses Depends(...) in argument defaults by design.
+ignore = ["B008"]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["S101"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["app"]
