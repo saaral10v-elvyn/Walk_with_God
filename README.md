@@ -9,28 +9,40 @@ The curriculum is a fixed sequence of **387 Walks across 15 Parts**, and every
 Walk has six sections: Main Passages, Bible History, Walking with God,
 God's Connections, Treasure to Keep, and Short Walk Prayer.
 
-> Status: **Stage 1 — foundation.** Only the backend skeleton, health check,
-> error handling, and test harness exist so far.
+> Status: **Stage 2 — frontend shell.** Backend foundation (health check,
+> error handling, tests) and the React shell (routing, API client, Vitest)
+> exist. Authentication, database, and features start in Stage 3.
 
 ## Repository layout
 
 ```
 backend/            FastAPI service (Python 3.11+, uv)
-frontend/           React + Vite + TypeScript + Tailwind (Stage 2+)
+frontend/           React + Vite + TypeScript + Tailwind (v4)
 docs/               design notes and decisions
 ```
 
 ## Quick start
 
+Terminal 1 — backend:
+
 ```powershell
 cd backend
 uv sync
 Copy-Item .env.example .env
-uv run pytest
 uv run uvicorn app.main:app --reload
 ```
 
-Health check: <http://127.0.0.1:8000/api/v1/health>
+Terminal 2 — frontend:
+
+```powershell
+cd frontend
+npm install
+Copy-Item .env.example .env
+npm run dev
+```
+
+Open <http://127.0.0.1:5173>. The dev server proxies `/api` to the backend,
+so the Status page shows live health data.
 
 ## Principles
 

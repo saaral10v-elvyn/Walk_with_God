@@ -1,0 +1,27 @@
+@import "tailwindcss";
+
+/* Design tokens: warm, quiet, scripture-first. */
+@theme {
+  --color-parchment: #faf6ef;
+  --color-sand: #ece3d5;
+  --color-ink: #241f1a;
+  --color-muted: #6b6156;
+  --color-evergreen: #1f5a45;
+  --color-evergreen-dark: #163f31;
+
+  --font-serif: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia,
+    "Times New Roman", serif;
+  --font-sans: "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial,
+    sans-serif;
+}
+
+@layer base {
+  body {
+    @apply bg-parchment font-sans text-ink antialiased;
+  }
+
+  /* Visible keyboard focus everywhere. */
+  :focus-visible {
+    @apply outline-2 outline-offset-2 outline-evergreen;
+  }
+}
