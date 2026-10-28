@@ -6,6 +6,27 @@ export interface HealthResponse {
   environment: string
 }
 
+export interface UserProfile {
+  id: string
+  email: string | null
+  display_name: string | null
+  timezone: string
+  created_at: string
+  updated_at: string
+}
+
+type AccessTokenProvider = () => string | null
+
+let getAccessToken: AccessTokenProvider = () => null
+
+/**
+ * Register the function that supplies the current Supabase access token.
+ * `AuthProvider` keeps it up to date; tests can set a fixed value.
+ */
+export function setAccessTokenProvider(provider: AccessTokenProvider): void {
+  getAccessToken = provider
+}
+
 interface ApiErrorBody {
   error?: {
     code?: string
@@ -30,11 +51,17 @@ export class ApiError extends Error {
 }
 
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
+  const token = getAccessToken()
+
   let response: Response
   try {
     response = await fetch(`${API_BASE_URL}${path}`, {
       ...init,
-      headers: { Accept: 'application/json', ...init?.headers },
+      headers: {
+        Accept: 'application/json',
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        ...init?.headers,
+      },
     })
   } catch {
     throw new ApiError(
@@ -65,4 +92,5 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
 /** Every backend call goes through here so auth and errors stay consistent. */
 export const api = {
   health: () => request<HealthResponse>('/v1/health'),
+  me: () => request<UserProfile>('/v1/auth/me'),
 }

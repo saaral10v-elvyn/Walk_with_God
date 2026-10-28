@@ -9,14 +9,14 @@ The curriculum is a fixed sequence of **387 Walks across 15 Parts**, and every
 Walk has six sections: Main Passages, Bible History, Walking with God,
 God's Connections, Treasure to Keep, and Short Walk Prayer.
 
-> Status: **Stage 2 — frontend shell.** Backend foundation (health check,
-> error handling, tests) and the React shell (routing, API client, Vitest)
-> exist. Authentication, database, and features start in Stage 3.
+> Status: **Stage 4 — authentication.** Backend foundation, React shell, the
+> PostgreSQL schema, and Supabase Auth (JWKS-verified access tokens) are in
+> place. Curriculum and Walk features start in Stage 5.
 
 ## Repository layout
 
 ```
-backend/            FastAPI service (Python 3.11+, uv)
+backend/            FastAPI service (Python 3.11+, uv, SQLAlchemy, Alembic)
 frontend/           React + Vite + TypeScript + Tailwind (v4)
 docs/               design notes and decisions
 ```

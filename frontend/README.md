@@ -33,14 +33,42 @@ uv run uvicorn app.main:app --reload
 
 ```
 src/
-  main.tsx          React root + BrowserRouter
+  main.tsx          React root + BrowserRouter + AuthProvider
   App.tsx           route table
+  auth/             AuthProvider, useAuth, ProtectedRoute
   components/       shared UI (Layout)
-  pages/            Home, Status, NotFound
-  lib/api.ts        typed fetch client + ApiError
+  pages/            Home, Status, Login, Account, NotFound
+  lib/api.ts        typed fetch client + ApiError + bearer token injection
+  lib/supabase.ts   Supabase browser client (null when unconfigured)
   test/setup.ts     Vitest + Testing Library setup
   index.css         Tailwind import and design tokens
 ```
+
+## Authentication
+
+Sign-in uses Supabase Auth. Copy `.env.example` to `.env` and set the project
+values (the anon key is public by design; never put a service-role key here):
+
+```dotenv
+VITE_SUPABASE_URL="https://YOUR_PROJECT_REF.supabase.co"
+VITE_SUPABASE_ANON_KEY=""
+```
+
+`AuthProvider` restores the stored session, refreshes tokens, and feeds the
+current access token to `lib/api.ts`, which adds the `Authorization` header.
+`ProtectedRoute` sends signed-out visitors to `/login`; `/account` calls
+`GET /api/v1/auth/me` to show the backend profile.
+
+### Google sign-in
+
+"Continue with Google" calls `supabase.auth.signInWithOAuth({ provider: 'google' })`
+on the existing client and redirects back to `/account`. It only works once the
+Google provider is enabled in the Supabase Dashboard (Authentication → Providers)
+and the redirect URL is allow-listed (Authentication → URL Configuration), e.g.
+`http://localhost:5173/account`. Until then the button reports a provider error.
+
+If the variables are missing, the app still runs and the login page explains
+what to add instead of crashing.
 
 ## Conventions
 

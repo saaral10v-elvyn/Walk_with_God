@@ -1,5 +1,7 @@
 import { Link, NavLink, Outlet } from 'react-router-dom'
 
+import { useAuth } from '../auth/context'
+
 function navLinkClass({ isActive }: { isActive: boolean }): string {
   const base = 'rounded-full px-4 py-2 text-sm font-medium transition-colors'
   return isActive
@@ -8,6 +10,8 @@ function navLinkClass({ isActive }: { isActive: boolean }): string {
 }
 
 export function Layout() {
+  const { user, loading, signOut } = useAuth()
+
   return (
     <div className="flex min-h-screen flex-col">
       <a
@@ -24,7 +28,7 @@ export function Layout() {
           </Link>
 
           <nav aria-label="Main">
-            <ul className="flex items-center gap-1">
+            <ul className="flex flex-wrap items-center gap-1">
               <li>
                 <NavLink to="/" end className={navLinkClass}>
                   Home
@@ -35,6 +39,35 @@ export function Layout() {
                   Status
                 </NavLink>
               </li>
+
+              {!loading && user && (
+                <>
+                  <li>
+                    <NavLink to="/account" className={navLinkClass}>
+                      Account
+                    </NavLink>
+                  </li>
+                  <li>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        void signOut().catch(() => undefined)
+                      }}
+                      className="rounded-full px-4 py-2 text-sm font-medium text-muted transition-colors hover:bg-sand hover:text-ink"
+                    >
+                      Sign out
+                    </button>
+                  </li>
+                </>
+              )}
+
+              {!loading && !user && (
+                <li>
+                  <NavLink to="/login" className={navLinkClass}>
+                    Sign in
+                  </NavLink>
+                </li>
+              )}
             </ul>
           </nav>
         </div>

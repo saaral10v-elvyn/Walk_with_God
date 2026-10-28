@@ -47,3 +47,43 @@ recorded in a delivery table with a unique key. "Scheduled" never means
 **Status:** accepted (2026-10-24)
 The project lives at `C:\dev\Walk_with_God`, outside OneDrive, to avoid file
 lock and sync problems with `.git`, `.venv`, and `node_modules`.
+
+## AD-008 — Supabase TLS defaults to `require`, with `verify-full` available
+**Status:** accepted (2026-10-27)
+The shared pooler presents a certificate signed by a private Supabase CA, which
+public trust stores reject. Supabase's documented default is `sslmode=require`:
+traffic is encrypted, but the server identity is not verified. `DB_SSL_MODE`
+therefore defaults to `require`. Full verification is supported by downloading
+the project root certificate from the Supabase dashboard, setting
+`DB_SSL_CA_FILE`, and switching to `verify-full`.
+
+## AD-009 — Portable enums and explicit constraint names
+**Status:** accepted (2026-10-27)
+Status/section values are stored as `VARCHAR` with a `CHECK` constraint instead
+of native PostgreSQL enums, because altering native enums is awkward in
+migrations. A metadata naming convention gives every constraint a predictable
+name, keeping Alembic diffs stable.
+
+## AD-010 — User data is keyed by the Supabase user id
+**Status:** accepted (2026-10-27)
+`users.id` is the JWT `sub` UUID. No passwords or refresh tokens are stored in
+the application database. Every user-owned table carries `user_id` with
+`ON DELETE CASCADE`; authorization is enforced server-side in the service layer.
+
+## AD-011 — Access tokens are verified locally against JWKS
+**Status:** accepted (2026-10-27)
+The backend never calls Supabase Auth to validate a request. It caches the
+project's public keys (one hour by default), accepts only ES256/RS256, requires
+`exp`, `iat`, `sub`, `aud`, and `iss`, and checks the audience and issuer. HMAC
+and `none` are rejected so the legacy shared secret can never act as a signing
+key. Unknown key ids trigger a throttled refresh to survive key rotation.
+The `users` profile row is created lazily on the first authenticated request,
+keyed by `sub`; no sign-up webhook is required.
+
+## AD-012 — The browser keeps the Supabase session, the server keeps authority
+**Status:** accepted (2026-10-27)
+Supabase's browser client persists the session (localStorage by default) and
+refreshes it automatically. That token is only a claim of identity: every
+backend decision re-verifies it, and the browser is never allowed to state who
+the user is or what they may access. If the stored token is missing, expired, or
+tampered with, the API answers `401` and the UI returns to `/login`.

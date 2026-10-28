@@ -33,11 +33,13 @@ class AppError(Exception):
         *,
         code: str = "app_error",
         status_code: int = status.HTTP_400_BAD_REQUEST,
+        headers: dict[str, str] | None = None,
     ) -> None:
         super().__init__(message)
         self.message = message
         self.code = code
         self.status_code = status_code
+        self.headers = headers
 
 
 def error_payload(
@@ -61,6 +63,7 @@ def register_exception_handlers(app: FastAPI) -> None:
         return JSONResponse(
             status_code=exc.status_code,
             content=error_payload(exc.code, exc.message),
+            headers=exc.headers,
         )
 
     @app.exception_handler(RequestValidationError)

@@ -45,14 +45,17 @@ export function HomePage() {
 
         <div className="mt-10 flex flex-wrap items-center gap-4">
           <Link
-            to="/status"
+            to="/login"
             className="rounded-full bg-evergreen px-6 py-3 font-medium text-parchment transition-colors hover:bg-evergreen-dark"
+          >
+            Create an account
+          </Link>
+          <Link
+            to="/status"
+            className="text-sm font-medium text-evergreen underline underline-offset-2"
           >
             Check the API status
           </Link>
-          <p className="text-sm text-muted">
-            Accounts and Walks arrive in the next stages.
-          </p>
         </div>
       </section>
 
